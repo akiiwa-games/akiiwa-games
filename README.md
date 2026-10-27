@@ -1,81 +1,47 @@
-# Akiiwa · tools for people who build with agents
+# Why I Built [AgentCompass](https://github.com/akiiwa-games/AgentCompass)
 
-**Route the work. See the quota. Make the desktop yours.**  
-**把任务交给合适的 Agent，看清额度，也给桌面加一点自己的风格。**
+When you live inside coding agents all day—running Claude Code, Codex, Antigravity, Grok, and local runners side by side—the bottleneck stops being *"can AI write this code?"* and becomes **orchestration friction**.
 
-I build local tools for coding-agent workflows and playful Windows interfaces. Start with an offline routing demo, a one-shot quota check, or a sample chat overlay.
+**[AgentCompass](https://github.com/akiiwa-games/AgentCompass)** grew out of three daily pain points that kept breaking my flow:
 
-我做面向重度 AI 用户的本机工具：任务路由、订阅额度监控，以及带一点动漫趣味的桌面交互。三个项目都公开源码，欢迎试用、提 Issue 或贡献改进。
+---
 
-[![AgentCompass](https://img.shields.io/github/stars/akiiwa-games/AgentCompass?style=flat&label=AgentCompass)](https://github.com/akiiwa-games/AgentCompass)
-[![usage-float](https://img.shields.io/github/stars/akiiwa-games/usage-float?style=flat&label=usage-float)](https://github.com/akiiwa-games/usage-float)
-[![lark-mbti-jev](https://img.shields.io/github/stars/akiiwa-games/lark-mbti-jev?style=flat&label=lark-mbti-jev)](https://github.com/akiiwa-games/lark-mbti-jev)
+### 1. Every Agent Has a Different Edge · Agent 各擅所长
+No single model wins every task anymore:
+- One model is unmatched at **deep root-cause debugging** across tangled state and race conditions;
+- Another shines at **divergent architecture, product copy, and UI direction**;
+- Another is a fast, surgical workhorse for **bounded refactors and test loops**;
+- Another runs in a **free isolated sandbox** that shouldn't even touch local machine quota.
 
-## 🧭 [AgentCompass](https://github.com/akiiwa-games/AgentCompass)
+Treating every subagent call as homogeneous either under-powers hard problems or wastes a specialist on boilerplate.
 
-**Match each task to an eligible model and effort level across your AI subscriptions.** A Python `route-agent-work` skill ranks workers using task fit and quota windows; an optional `PreToolUse` gate checks routed launches. The Windows cockpit is optional. Alpha: adapt the reference fleet to your own accounts.
+### 2. Model & Effort Decision Fatigue · 模型选择疲劳
+Every time a task branches into sub-tasks, you face the same micro-tax:
+> *"Which provider should run this? Which account? Which model tier? Should effort be `low`, `medium`, `high`, or `xhigh`?"*
 
-**按任务能力需求与订阅剩余额度选择 worker。** 核心是可审计的确定性路由器，支持 Claude Code、Codex、Antigravity、Grok 和 Paseo；可选门禁约束子 Agent 启动。
+Making that decision manually dozens of times a day leads to two bad outcomes: you either burn mental energy babysitting model pickers, or you lazily leave your most expensive flagship model on `xhigh` for everything—including 3-minute chores.
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB)](https://github.com/akiiwa-games/AgentCompass#try-it)
-[![Agent Skill](https://img.shields.io/badge/Agent_Skill-route--agent--work-6750A4)](https://github.com/akiiwa-games/AgentCompass/tree/main/skills/route-agent-work)
-[![License](https://img.shields.io/github/license/akiiwa-games/AgentCompass)](https://github.com/akiiwa-games/AgentCompass/blob/main/LICENSE)
+### 3. Multi-Subscription Quota Chaos · 额度管理困难
+Heavy agent workflows rarely fit inside a single subscription. Once you juggle multiple rolling 5-hour windows, 7-day caps, weekly model pools, and staggered reset clocks across providers:
+- One account hits a sudden **rate-limit wall mid-sprint** while you are deep in context;
+- Meanwhile, another paid subscription sits idle and **lets 60% of its weekly capacity expire unused** at reset time.
 
-[![AgentCompass preview](https://raw.githubusercontent.com/akiiwa-games/akiiwa-games/main/assets/agentcompass.png)](https://github.com/akiiwa-games/AgentCompass)
+---
+
+## The Thesis: Route Work by Math, Not Guesswork
+
+**[AgentCompass](https://github.com/akiiwa-games/AgentCompass)** turns *"who should do this task?"* from a human habit into a **deterministic, auditable routing step**:
+
+1. **5D Task Profiling (System-One)**: Scores the task itself (`code_complexity`, `reasoning_depth`, `context_scale`, `tool_loop_intensity`, `hallucination_risk`) without hardcoding model names.
+2. **Minimum-Sufficient Capability Fit**: Matches the task vector against each model+effort bundle's actual strengths—never under-provisioning high-risk work, never over-spending `xhigh` on simple loops.
+3. **Reset-Aware Quota Pacing**: Reads live remaining capacity and reset horizons (powered by [usage-float](https://github.com/akiiwa-games/usage-float)) to balance burn rates across accounts before windows reset.
+4. **Hard Gate Enforcement**: Hooks into `PreToolUse` / `tool_call` so main sessions cannot silently spawn unrouted or under-configured subagents.
+
+[![AgentCompass overview](https://raw.githubusercontent.com/akiiwa-games/akiiwa-games/main/assets/agentcompass.png)](https://github.com/akiiwa-games/AgentCompass)
 
 ```powershell
 git clone https://github.com/akiiwa-games/AgentCompass.git
 cd AgentCompass
 python -X utf8 skills/route-agent-work/scripts/route_judge.py plan --input examples/task.json --dry-run --demo
 ```
-
-Offline, synthetic quota data; no credentials or worker launches. / 离线演示，不读凭据、不启动 worker。
-
-## 📊 [usage-float](https://github.com/akiiwa-games/usage-float)
-
-**Keep multi-account subscription quotas visible while you code.** A borderless Windows HUD and headless collector show usage windows and reset times for Claude, Codex, Grok, Antigravity and supported gateways. Inspect and redeem available reset credits from the HUD.
-
-**多个账号的 5 小时与周额度，一眼看清。** 可独立运行，也为 AgentCompass 提供额度数据；支持悬浮窗、副屏面板与可用重置额度的查看和兑换。
-
-[![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D4)](https://github.com/akiiwa-games/usage-float#installation--quick-start)
-[![CLI + HUD](https://img.shields.io/badge/Interface-CLI_%2B_HUD-198754)](https://github.com/akiiwa-games/usage-float)
-[![License](https://img.shields.io/github/license/akiiwa-games/usage-float)](https://github.com/akiiwa-games/usage-float/blob/main/LICENSE)
-
-[![usage-float preview](https://raw.githubusercontent.com/akiiwa-games/akiiwa-games/main/assets/usage-float.png)](https://github.com/akiiwa-games/usage-float)
-
-```powershell
-git clone https://github.com/akiiwa-games/usage-float.git
-cd usage-float
-python usage_float.py once
-# Windows + Python 3.10 with tkinter; launch the desktop HUD:
-pythonw usage_float.py
-```
-
-Uses your local provider sign-ins; missing providers may show unavailable. For a standalone Windows package, see [Releases](https://github.com/akiiwa-games/usage-float/releases). / 使用本机已登录的账号；未登录的提供方可能显示不可用。
-
-## 🎭 [lark-mbti-jev](https://github.com/akiiwa-games/lark-mbti-jev)
-
-**Turn a Feishu/Lark chat into a local personality-themed desktop overlay.** Jev estimates MBTI probabilities from selected chat history; Windows UI Automation tracks name badges as the conversation scrolls. Optional anime character themes keep it playful. Labels are local; live analysis needs Lark permissions and a Jev/TypeSafe service.
-
-**飞书群聊姓名旁的本机 MBTI / 动漫角色标签。** 概率仅供趣味参考，不是人格评估；标签不发送到群里。先渲染示例图即可体验视觉效果，无需聊天记录或 API 密钥。
-
-[![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D4)](https://github.com/akiiwa-games/lark-mbti-jev#安装和启动)
-[![Jev](https://img.shields.io/badge/Inference-TypeSafe_Jev-8B5CF6)](https://github.com/akiiwa-games/lark-mbti-jev)
-[![License](https://img.shields.io/github/license/akiiwa-games/lark-mbti-jev)](https://github.com/akiiwa-games/lark-mbti-jev/blob/main/LICENSE)
-
-[![lark-mbti-jev preview](https://raw.githubusercontent.com/akiiwa-games/akiiwa-games/main/assets/lark-mbti-jev.png)](https://github.com/akiiwa-games/lark-mbti-jev)
-
-```powershell
-git clone https://github.com/akiiwa-games/lark-mbti-jev.git
-cd lark-mbti-jev
-python -m pip install Pillow
-python tools/render_demo.py
-# Open docs/demo-mbti.png and docs/demo-girl-bands.png
-```
-
-Sample rendering only; no messages fetched and no model call. / 只生成示例图，不读取群聊、不调用模型。
-
----
-
-**Try one, then tell me what got in your way.** Open an issue in the relevant repository; concrete examples and small improvements are welcome.  
-**先试一个，卡在哪里就告诉我。** 欢迎在对应仓库提 Issue、反馈使用场景，或贡献一个小改进。
+*(Runs offline with synthetic multi-account quota data—no API keys or live credentials required.)*
