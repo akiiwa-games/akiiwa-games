@@ -10,7 +10,7 @@ When you work with multiple coding agents every day, the bottleneck is no longer
 
 **The fix**: Score the task across five dimensions, match the minimum-sufficient model and effort, pace live quota before each window resets (via [usage-float](https://github.com/akiiwa-games/usage-float)), and enforce the route at `PreToolUse`.
 
-[![AgentCompass](https://raw.githubusercontent.com/akiiwa-games/akiiwa-games/main/assets/agentcompass.png)](https://github.com/akiiwa-games/AgentCompass)
+[![AgentCompass](https://raw.githubusercontent.com/akiiwa-games/AgentCompass/main/docs/hero.gif)](https://github.com/akiiwa-games/AgentCompass)
 
 ```powershell
 git clone https://github.com/akiiwa-games/AgentCompass.git
